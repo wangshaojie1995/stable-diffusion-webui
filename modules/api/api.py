@@ -6,6 +6,7 @@ import datetime
 import uvicorn
 import ipaddress
 import requests
+import spaces
 import gradio as gr
 from threading import Lock
 from io import BytesIO
@@ -428,7 +429,7 @@ class Api:
                 mentioned_script_args[index] = value
 
         return params
-
+    @spaces.GPU(duration=120)
     def text2imgapi(self, txt2imgreq: models.StableDiffusionTxt2ImgProcessingAPI):
         task_id = txt2imgreq.force_task_id or create_task_id("txt2img")
 
