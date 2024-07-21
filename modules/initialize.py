@@ -20,7 +20,7 @@ def imports():
     warnings.filterwarnings(action="ignore", category=UserWarning, module="torchvision")
 
     os.environ.setdefault('GRADIO_ANALYTICS_ENABLED', 'False')
-    import gradio  # noqa: F401
+    # import gradio  # noqa: F401
     startup_timer.record("import gradio")
 
     from modules import paths, timer, import_hook, errors  # noqa: F401
