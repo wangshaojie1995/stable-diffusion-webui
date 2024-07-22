@@ -97,7 +97,7 @@ class PydanticModelGenerator:
         # DynamicModel.__config__.allow_population_by_field_name = True
         # DynamicModel.__config__.allow_mutation = True
         # return DynamicModel
-        DynamicModel = create_model(self._model_name, __base__=BaseModel, __config__=ConfigDict(populate_by_name=True, allow_mutation=True), **fields)
+        DynamicModel = create_model(self._model_name, __config__=ConfigDict(populate_by_name=True, allow_mutation=True), **fields)
         return DynamicModel
 
 StableDiffusionTxt2ImgProcessingAPI = PydanticModelGenerator(
