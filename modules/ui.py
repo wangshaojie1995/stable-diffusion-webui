@@ -2,38 +2,42 @@ import datetime
 import mimetypes
 import os
 import sys
-from functools import reduce
 import warnings
 from contextlib import ExitStack
+from functools import reduce
 
 import gradio as gr
 import gradio.utils
 import numpy as np
 from PIL import Image, PngImagePlugin  # noqa: F401
-from modules.call_queue import wrap_gradio_gpu_call, wrap_queued_call, wrap_gradio_call
 
-from modules import gradio_extensons, sd_schedulers  # noqa: F401
-from modules import sd_hijack, sd_models, script_callbacks, ui_extensions, deepbooru, extra_networks, ui_common, ui_postprocessing, progress, ui_loadsave, shared_items, ui_settings, timer, sysinfo, ui_checkpoint_merger, scripts, sd_samplers, processing, ui_extra_networks, ui_toprow, launch_utils
-from modules.ui_components import FormRow, FormGroup, ToolButton, FormHTML, InputAccordion, ResizeHandleRow
-from modules.paths import script_path
-from modules.ui_common import create_refresh_button
-from modules.ui_gradio_extensions import reload_javascript
-
-from modules.shared import opts, cmd_opts
-
-import modules.infotext_utils as parameters_copypaste
 import modules.hypernetworks.ui as hypernetworks_ui
-import modules.textual_inversion.ui as textual_inversion_ui
-import modules.textual_inversion.textual_inversion as textual_inversion
+import modules.infotext_utils as parameters_copypaste
 import modules.shared as shared
-from modules import prompt_parser
+import modules.textual_inversion.textual_inversion as textual_inversion
+import modules.textual_inversion.ui as textual_inversion_ui
+from modules import (deepbooru, extra_networks, gradio_extensons,  # noqa: F401
+                     launch_utils, processing, progress, prompt_parser,
+                     script_callbacks, scripts, sd_hijack, sd_models,
+                     sd_samplers, sd_schedulers, shared_items, sysinfo, timer,
+                     ui_checkpoint_merger, ui_common, ui_extensions,
+                     ui_extra_networks, ui_loadsave, ui_postprocessing,
+                     ui_settings, ui_toprow)
+from modules.call_queue import (wrap_gradio_call, wrap_gradio_gpu_call,
+                                wrap_queued_call)
+from modules.infotext_utils import PasteField, image_from_url_text
+from modules.paths import script_path
 from modules.sd_hijack import model_hijack
-from modules.infotext_utils import image_from_url_text, PasteField
+from modules.shared import cmd_opts, opts
+from modules.ui_common import create_refresh_button
+from modules.ui_components import (FormGroup, FormHTML, FormRow,
+                                   InputAccordion, ResizeHandleRow, ToolButton)
+from modules.ui_gradio_extensions import reload_javascript
 
 create_setting_component = ui_settings.create_setting_component
 
-warnings.filterwarnings("default" if opts.show_warnings else "ignore", category=UserWarning)
-warnings.filterwarnings("default" if opts.show_gradio_deprecation_warnings else "ignore", category=gr.deprecation.GradioDeprecationWarning)
+# warnings.filterwarnings("default" if opts.show_warnings else "ignore", category=UserWarning)
+# warnings.filterwarnings("default" if opts.show_gradio_deprecation_warnings else "ignore", category=gr.deprecation.GradioDeprecationWarning)
 
 # this is a fix for Windows users. Without it, javascript files will be served with text/html content-type and the browser will not show any UI
 mimetypes.init()
@@ -1165,8 +1169,8 @@ def create_ui():
 
 
 def versions_html():
-    import torch
     import launch
+    import torch
 
     python_version = ".".join([str(x) for x in sys.version_info[0:3]])
     commit = launch.commit_hash()
