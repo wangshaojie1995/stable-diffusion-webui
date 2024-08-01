@@ -84,7 +84,8 @@ def load_models(model_path: str, model_url: str = None, command_path: str = None
 
     except Exception:
         pass
-
+    print(f"-=-=-=-=-=-=加载 模型列表 {model_path}")
+    print(output)
     return output
 
 
