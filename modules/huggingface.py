@@ -18,7 +18,7 @@ def loadHuggingfaceModel(file_path):
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
             # repoPath = f"wsj1995{file_path.split(pathSuffix)[-1]}"
-            filename = file_path.split(pathSuffix)[-1]
+            filename = file_path.split(pathSuffix)[-1][1:]
             cacheDir = file_path.replace(filename,'')
             print({
                 'repo_id':hfModelRepoMap[pathSuffix], 
