@@ -17,6 +17,7 @@ from modules.timer import Timer
 from modules.shared import opts
 import tomesd
 import numpy as np
+from modules.huggingface import loadHuggingfaceModel
 
 model_dir = "Stable-diffusion"
 model_path = os.path.abspath(os.path.join(paths.models_path, model_dir))
@@ -297,17 +298,19 @@ def read_metadata_from_safetensors(filename):
 
 def read_state_dict(checkpoint_file, print_global_state=False, map_location=None):
     print(f'-=-=-=-=-=-=- checkpoint_file {checkpoint_file}')
-    _, extension = os.path.splitext(checkpoint_file)
-    if extension.lower() == ".safetensors":
-        device = map_location or shared.weight_load_location or devices.get_optimal_device_name()
+    pl_sd = loadHuggingfaceModel(checkpoint_file)
+    if pl_sd is None:
+        _, extension = os.path.splitext(checkpoint_file)
+        if extension.lower() == ".safetensors":
+            device = map_location or shared.weight_load_location or devices.get_optimal_device_name()
 
-        if not shared.opts.disable_mmap_load_safetensors:
-            pl_sd = safetensors.torch.load_file(checkpoint_file, device=device)
+            if not shared.opts.disable_mmap_load_safetensors:
+                pl_sd = safetensors.torch.load_file(checkpoint_file, device=device)
+            else:
+                pl_sd = safetensors.torch.load(open(checkpoint_file, 'rb').read())
+                pl_sd = {k: v.to(device) for k, v in pl_sd.items()}
         else:
-            pl_sd = safetensors.torch.load(open(checkpoint_file, 'rb').read())
-            pl_sd = {k: v.to(device) for k, v in pl_sd.items()}
-    else:
-        pl_sd = torch.load(checkpoint_file, map_location=map_location or shared.weight_load_location)
+            pl_sd = torch.load(checkpoint_file, map_location=map_location or shared.weight_load_location)
 
     if print_global_state and "global_step" in pl_sd:
         print(f"Global Step: {pl_sd['global_step']}")

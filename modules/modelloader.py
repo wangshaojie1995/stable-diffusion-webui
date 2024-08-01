@@ -10,6 +10,7 @@ import torch
 
 from modules import shared
 from modules.upscaler import Upscaler, UpscalerLanczos, UpscalerNearest, UpscalerNone
+from modules.huggingface import huggingfaceModelList
 
 if TYPE_CHECKING:
     import spandrel
@@ -81,6 +82,9 @@ def load_models(model_path: str, model_url: str = None, command_path: str = None
                 output.append(load_file_from_url(model_url, model_dir=places[0], file_name=download_name))
             else:
                 output.append(model_url)
+        
+        hfModels = huggingfaceModelList(model_path)
+        output = output + hfModels
 
     except Exception:
         pass
