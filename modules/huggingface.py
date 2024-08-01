@@ -14,7 +14,7 @@ def loadHuggingfaceModel(file_path):
     repoPath = None
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
-            repoPath = f"{hfModelRepoMap[pathSuffix]}{file_path.split('pathSuffix')[-1]}"
+            repoPath = f"wsj1995{file_path.split(pathSuffix)[-1]}"
             break
     if repoPath is None:
         return repoPath 
