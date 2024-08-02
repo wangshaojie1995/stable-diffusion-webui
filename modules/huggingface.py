@@ -33,38 +33,13 @@ def loadHuggingfaceModel(file_path):
     if os.path.exists(file_path):
         print(f"文件 {file_path} 已存在，跳过下载")
         return
-    # repoPath = None
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
             filename = file_path.split(pathSuffix)[-1][1:]
             pathData = pathlib.Path(file_path)
             DownLoad(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{filename}", pathData.parent, pathData.name)
-            # repoPath = f"wsj1995{file_path.split(pathSuffix)[-1]}"
-            # print({
-            #     'repo_id':hfModelRepoMap[pathSuffix], 
-            #     'filename':filename,   
-            #     'cache_dir':os.path.dirname(file_path),
-            # })
-            # downloadedFilePath = hf_hub_download(
-            #     repo_id=hfModelRepoMap[pathSuffix], 
-            #     filename=filename,   
-            #     # cache_dir=os.path.dirname(file_path),
-            #     token=os.environ.get("HF_TOKEN")
-            # )
-            # os.makedirs(os.path.dirname(file_path), exist_ok=True) 
-            # shutil.move(downloadedFilePath, file_path)
             print(f'模型文件下载完成 {file_path}')
-            print(os.path.exists(file_path))
-            # print(os.path.exists(downloadedFilePath))
             break
-    # if repoPath is None:
-    #     return repoPath 
-    # model = AutoModel.from_pretrained(repoPath,use_auth_token=os.environ.get("HF_TOKEN"))
-
-    # # 获取模型的状态字典
-    # pl_sd = model.state_dict()
-
-    # return pl_sd
     
 
 def huggingfaceModelList(model_path):
