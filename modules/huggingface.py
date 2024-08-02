@@ -14,6 +14,7 @@ hfModelRepoMap = {
 # TODO: api运行完成后删除下载的模型
 def loadHuggingfaceModel(file_path):
     if os.path.exists(file_path):
+        print(f"文件 {file_path} 已存在，跳过下载")
         return
     # repoPath = None
     for pathSuffix in hfModelRepoMap:
