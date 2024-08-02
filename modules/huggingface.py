@@ -26,12 +26,13 @@ def loadHuggingfaceModel(file_path):
                 'cache_dir':os.path.dirname(file_path),
                 'cacheDir': cacheDir
             })
-            file_path = hf_hub_download(
+            downloadedFilePath = hf_hub_download(
                 repo_id=hfModelRepoMap[pathSuffix], 
                 filename=filename,   
                 cache_dir=os.path.dirname(file_path),
                 token=os.environ.get("HF_TOKEN")
             )
+            print(f'模型文件下载完成 {downloadedFilePath}')
             break
     # if repoPath is None:
     #     return repoPath 
