@@ -38,7 +38,8 @@ def loadHuggingfaceModel(file_path):
         if pathSuffix in file_path:
             
             filename = file_path.split(pathSuffix)[-1][1:]
-            DownLoad(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/{filename}",file_path)
+            pathData = pathlib.Path("/home/user/stable-diffusion-webui/models/Stable-diffusion/100254/111237/hellojplassie_realV10.safetensors")
+            DownLoad(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/{filename}", pathData.parent, pathData.name)
             # repoPath = f"wsj1995{file_path.split(pathSuffix)[-1]}"
             # print({
             #     'repo_id':hfModelRepoMap[pathSuffix], 
