@@ -34,6 +34,7 @@ def loadHuggingfaceModel(file_path):
             os.makedirs(os.path.dirname(file_path), exist_ok=True) 
             shutil.move(downloadedFilePath, file_path)
             print(f'模型文件下载完成 {downloadedFilePath}')
+            print(os.path.exists(file_path))
             break
     # if repoPath is None:
     #     return repoPath 
