@@ -1,6 +1,7 @@
 from transformers import AutoModel
 from huggingface_hub import list_repo_files,hf_hub_download
 import os
+import shutil
 
 hfModelRepoMap = {
     "/Stable-diffusion": "wsj1995/Checkpoint",
@@ -19,19 +20,19 @@ def loadHuggingfaceModel(file_path):
         if pathSuffix in file_path:
             # repoPath = f"wsj1995{file_path.split(pathSuffix)[-1]}"
             filename = file_path.split(pathSuffix)[-1][1:]
-            cacheDir = file_path.replace(filename,'')
             print({
                 'repo_id':hfModelRepoMap[pathSuffix], 
                 'filename':filename,   
                 'cache_dir':os.path.dirname(file_path),
-                'cacheDir': cacheDir
             })
             downloadedFilePath = hf_hub_download(
                 repo_id=hfModelRepoMap[pathSuffix], 
                 filename=filename,   
-                cache_dir=os.path.dirname(file_path),
+                # cache_dir=os.path.dirname(file_path),
                 token=os.environ.get("HF_TOKEN")
             )
+            os.makedirs(os.path.dirname(file_path), exist_ok=True) 
+            shutil.move(downloadedFilePath, file_path)
             print(f'模型文件下载完成 {downloadedFilePath}')
             break
     # if repoPath is None:
