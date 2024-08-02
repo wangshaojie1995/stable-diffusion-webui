@@ -7,7 +7,7 @@ import pathlib
 import gc
 
 hfModelRepoMap = {
-    "/Stable-diffusion": "wsj1995/Checkpoint",
+    "/Stable-diffusion": "wsj1995/stable-diffusion-models",
     # "/ScuNET": '',
     # "/SwinIR": "",
     # "/RealESRGAN": "",
