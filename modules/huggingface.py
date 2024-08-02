@@ -35,6 +35,7 @@ def loadHuggingfaceModel(file_path):
             shutil.move(downloadedFilePath, file_path)
             print(f'模型文件下载完成 {downloadedFilePath} 并移动到 {file_path}')
             print(os.path.exists(file_path))
+            print(os.path.exists(downloadedFilePath))
             break
     # if repoPath is None:
     #     return repoPath 
