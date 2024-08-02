@@ -104,7 +104,6 @@ def cached_data_for_file(subsection, title, filename, func):
     loadHuggingfaceModel(filename)
     existing_cache = cache(subsection)
     ondisk_mtime = os.path.getmtime(filename)
-    os.remove(filename)
     entry = existing_cache.get(title)
     if entry:
         cached_mtime = entry.get("mtime", 0)
@@ -114,6 +113,7 @@ def cached_data_for_file(subsection, title, filename, func):
     if not entry or 'value' not in entry:
         value = func()
         if value is None:
+            os.remove(filename)
             return None
 
         entry = {'mtime': ondisk_mtime, 'value': value}
@@ -121,4 +121,5 @@ def cached_data_for_file(subsection, title, filename, func):
 
         dump_cache()
 
+    os.remove(filename)
     return entry['value']
