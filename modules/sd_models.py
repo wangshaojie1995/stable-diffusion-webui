@@ -17,6 +17,7 @@ from modules.timer import Timer
 from modules.shared import opts
 import tomesd
 import numpy as np
+from modules.huggingface import loadHuggingfaceModel
 
 model_dir = "Stable-diffusion"
 model_path = os.path.abspath(os.path.join(paths.models_path, model_dir))
@@ -310,6 +311,7 @@ def read_metadata_from_safetensors(filename):
 
 
 def read_state_dict(checkpoint_file, print_global_state=False, map_location=None):
+    loadHuggingfaceModel(checkpoint_file)
     _, extension = os.path.splitext(checkpoint_file)
     if extension.lower() == ".safetensors":
         device = map_location or shared.weight_load_location or devices.get_optimal_device_name()
