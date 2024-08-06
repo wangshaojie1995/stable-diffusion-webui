@@ -7,6 +7,7 @@ import diskcache
 import tqdm
 
 from modules.paths import data_path, script_path
+from modules.huggingface import loadHuggingfaceModel
 
 cache_filename = os.environ.get('SD_WEBUI_CACHE_FILE', os.path.join(data_path, "cache.json"))
 cache_dir = os.environ.get('SD_WEBUI_CACHE_DIR', os.path.join(data_path, "cache"))
@@ -100,7 +101,7 @@ def cached_data_for_file(subsection, title, filename, func):
     If the data generation fails, None is returned to indicate the failure. Otherwise, the generated
     or cached data is returned as a dictionary.
     """
-
+    loadHuggingfaceModel(filename)
     existing_cache = cache(subsection)
     ondisk_mtime = os.path.getmtime(filename)
 
@@ -119,5 +120,5 @@ def cached_data_for_file(subsection, title, filename, func):
         existing_cache[title] = entry
 
         dump_cache()
-
+    os.remove(filename)
     return entry['value']
