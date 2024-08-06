@@ -31,14 +31,17 @@ def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
 def loadHuggingfaceModel(file_path):
     if os.path.exists(file_path):
         print(f"文件 {file_path} 已存在，跳过下载")
-        return
+        return True
+    downloaded = False
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
             filename = file_path.split(pathSuffix)[-1][1:]
             pathData = pathlib.Path(file_path)
             DownLoad(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{filename}", pathData.parent, pathData.name)
             print(f'模型文件下载完成 {file_path}')
+            downloaded = True
             break
+    return downloaded
     
 
 def huggingfaceModelList(model_path):
