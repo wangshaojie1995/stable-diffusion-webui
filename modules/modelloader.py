@@ -88,6 +88,7 @@ def load_models(model_path: str, model_url: str = None, command_path: str = None
 
         hfModels = huggingfaceModelList(model_path)
         output = output + hfModels
+        print(f"加载模型数量:{len(output)} {model_path} ")
     except Exception:
         pass
 
