@@ -7,7 +7,7 @@ import diskcache
 import tqdm
 
 from modules.paths import data_path, script_path
-from modules.huggingface import loadHuggingfaceModel
+from modules import shared
 
 cache_filename = os.environ.get('SD_WEBUI_CACHE_FILE', os.path.join(data_path, "cache.json"))
 cache_dir = os.environ.get('SD_WEBUI_CACHE_DIR', os.path.join(data_path, "cache"))
@@ -103,8 +103,10 @@ def cached_data_for_file(subsection, title, filename, func):
     """
     # downloaded = loadHuggingfaceModel(filename)
     existing_cache = cache(subsection)
-    # ondisk_mtime = os.path.getmtime(filename)
-    ondisk_mtime = -1
+    if shared.cmd_opts.no_hashing:
+        ondisk_mtime = -1
+    else:
+        ondisk_mtime = os.path.getmtime(filename)
     entry = existing_cache.get(title)
     if entry:
         cached_mtime = entry.get("mtime", 0)
@@ -112,8 +114,11 @@ def cached_data_for_file(subsection, title, filename, func):
             entry = None
 
     if not entry or 'value' not in entry:
-        # value = func()
-        value = {}
+        if shared.cmd_opts.no_hashing:
+            value = {}
+        else:
+            value = func()
+        
         if value is None:
             return None
 
