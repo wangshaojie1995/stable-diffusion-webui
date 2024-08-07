@@ -1,10 +1,9 @@
 from huggingface_hub import list_repo_files,hf_hub_download
 import os
-import shutil
+import json
 import subprocess
 import pathlib
 import gc
-from modules.cache import cache
 
 hfModelRepoMap = {
     "/Stable-diffusion": "wsj1995/Checkpoint",
@@ -53,37 +52,52 @@ def loadHuggingfaceModel(file_path):
     
 
 def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
-    fileList = []
+    model_lists = os.environ.get('MODEL_LISTS')
+    if model_lists:
+        model_lists = json.loads(model_lists)
+    else:
+        model_lists = {}
     result = []
-    matchedPathSuffix = ''
-    existing_cache = cache(listCacheKey)
-    for pathSuffix in hfModelRepoMap:
+    for pathSuffix in model_lists:
         if model_path.endswith(pathSuffix):
-            matchedPathSuffix = pathSuffix
-            cacheData = existing_cache.get(pathSuffix)
-            if cacheData:
-                print('缓存读取 modelList')
-                result = cacheData
-            else:
-                fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
-                folder = f"{hfDownloadFolder}{matchedPathSuffix}"
-                os.makedirs(folder, exist_ok=True)
-                for file in fileList:
-                    full_path = f"{folder}/{file}"
-                    if ext_filter is not None:
-                        _, ext = os.path.splitext(file)
-                        if ext.lower() not in ext_filter:
-                            continue
-                    if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
-                        continue
-                    if full_path not in output:
-                        result.append(full_path)
-                        # 直接返回http连接还是需要手动下载，sd不会自动下载
-                        # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
-                
-                existing_cache[pathSuffix] = result
+            fileList = model_lists[pathSuffix]
+            folder = f"{hfDownloadFolder}{pathSuffix}"
+            for file in fileList:
+                result.append(f"{folder}/{file}")
             break
     return result
+# def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
+#     fileList = []
+#     result = []
+#     matchedPathSuffix = ''
+#     existing_cache = cache(listCacheKey)
+#     for pathSuffix in hfModelRepoMap:
+#         if model_path.endswith(pathSuffix):
+#             matchedPathSuffix = pathSuffix
+#             cacheData = existing_cache.get(pathSuffix)
+#             if cacheData:
+#                 print('缓存读取 modelList')
+#                 result = cacheData
+#             else:
+#                 fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
+#                 folder = f"{hfDownloadFolder}{matchedPathSuffix}"
+#                 os.makedirs(folder, exist_ok=True)
+#                 for file in fileList:
+#                     full_path = f"{folder}/{file}"
+#                     if ext_filter is not None:
+#                         _, ext = os.path.splitext(file)
+#                         if ext.lower() not in ext_filter:
+#                             continue
+#                     if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
+#                         continue
+#                     if full_path not in output:
+#                         result.append(full_path)
+#                         # 直接返回http连接还是需要手动下载，sd不会自动下载
+#                         # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
+                
+#                 existing_cache[pathSuffix] = result
+#             break
+#     return result
 
 
 
