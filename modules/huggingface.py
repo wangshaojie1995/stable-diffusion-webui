@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import pathlib
 import gc
+from modules.cache import cache
 
 hfModelRepoMap = {
     "/Stable-diffusion": "wsj1995/Checkpoint",
@@ -14,7 +15,7 @@ hfModelRepoMap = {
     # "/HAT": ""
 }
 hfDownloadFolder = '/dev/shm'
-
+listCacheKey = 'model-list'
 def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
     if (DownloadPath / DownLoadFileName).is_file(): return 0
     for z in range(10):
@@ -53,28 +54,34 @@ def loadHuggingfaceModel(file_path):
 
 def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
     fileList = []
+    result = []
     matchedPathSuffix = ''
+    existing_cache = cache(listCacheKey)
     for pathSuffix in hfModelRepoMap:
         if model_path.endswith(pathSuffix):
             matchedPathSuffix = pathSuffix
-            fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
+            cacheData = existing_cache.get(pathSuffix)
+            if cacheData:
+                result = cacheData
+            else:
+                fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
+                folder = f"{hfDownloadFolder}{matchedPathSuffix}"
+                os.makedirs(folder, exist_ok=True)
+                for file in fileList:
+                    full_path = f"{folder}/{file}"
+                    if ext_filter is not None:
+                        _, ext = os.path.splitext(file)
+                        if ext.lower() not in ext_filter:
+                            continue
+                    if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
+                        continue
+                    if full_path not in output:
+                        result.append(full_path)
+                        # 直接返回http连接还是需要手动下载，sd不会自动下载
+                        # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
+                
+                existing_cache[pathSuffix] = result
             break
-    result = []
-    folder = f"{hfDownloadFolder}{matchedPathSuffix}"
-    os.makedirs(folder, exist_ok=True)
-    for file in fileList:
-        full_path = f"{folder}/{file}"
-        if ext_filter is not None:
-            _, ext = os.path.splitext(file)
-            if ext.lower() not in ext_filter:
-                continue
-        if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
-            continue
-        if full_path not in output:
-            result.append(full_path)
-            # 直接返回http连接还是需要手动下载，sd不会自动下载
-            # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
-    
     return result
 
 
