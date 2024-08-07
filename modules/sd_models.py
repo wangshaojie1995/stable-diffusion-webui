@@ -17,7 +17,6 @@ from modules.timer import Timer
 from modules.shared import opts
 import tomesd
 import numpy as np
-from modules.huggingface import loadHuggingfaceModel
 
 model_dir = "Stable-diffusion"
 model_path = os.path.abspath(os.path.join(paths.models_path, model_dir))
