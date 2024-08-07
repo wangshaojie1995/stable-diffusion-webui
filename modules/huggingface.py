@@ -14,6 +14,6 @@ def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
             fileList = model_lists[pathSuffix]
             folder = f"{hfDownloadFolder}{pathSuffix}"
             for file in fileList:
-                result.append(f"{folder}/{file}")
+                result.append(f"{folder}/{file['filename']}")
             break
     return result
