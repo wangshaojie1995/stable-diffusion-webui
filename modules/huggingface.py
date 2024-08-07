@@ -30,6 +30,7 @@ def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
 # TODO: api运行完成后删除下载的模型
 def loadHuggingfaceModel(file_path):
     downloaded = False
+    print(f'加载模型文件 {file_path}')
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
             if os.path.exists(file_path):
@@ -54,4 +55,6 @@ def huggingfaceModelList(model_path):
     result = []
     for file in fileList:
         result.append(model_path + '/' + file)
+    
+    print(f'加载模型列表 {model_path}')
     return result
