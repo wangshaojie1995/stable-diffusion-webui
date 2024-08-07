@@ -101,10 +101,10 @@ def cached_data_for_file(subsection, title, filename, func):
     If the data generation fails, None is returned to indicate the failure. Otherwise, the generated
     or cached data is returned as a dictionary.
     """
-    downloaded = loadHuggingfaceModel(filename)
+    # downloaded = loadHuggingfaceModel(filename)
     existing_cache = cache(subsection)
-    ondisk_mtime = os.path.getmtime(filename)
-
+    # ondisk_mtime = os.path.getmtime(filename)
+    ondisk_mtime = -1
     entry = existing_cache.get(title)
     if entry:
         cached_mtime = entry.get("mtime", 0)
@@ -112,7 +112,8 @@ def cached_data_for_file(subsection, title, filename, func):
             entry = None
 
     if not entry or 'value' not in entry:
-        value = func()
+        # value = func()
+        value = {}
         if value is None:
             return None
 
@@ -120,6 +121,4 @@ def cached_data_for_file(subsection, title, filename, func):
         existing_cache[title] = entry
 
         dump_cache()
-    if downloaded:
-        os.remove(filename)
     return entry['value']
