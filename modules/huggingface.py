@@ -13,6 +13,7 @@ hfModelRepoMap = {
     # "/DAT": "",
     # "/HAT": ""
 }
+hfDownloadFolder = '/dev/shm'
 
 def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
     if (DownloadPath / DownLoadFileName).is_file(): return 0
@@ -29,32 +30,40 @@ def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
 
 # TODO: api运行完成后删除下载的模型
 def loadHuggingfaceModel(file_path):
-    downloaded = False
+    downloadedFilePath = file_path
     print(f'加载模型文件 {file_path}')
     for pathSuffix in hfModelRepoMap:
         if pathSuffix in file_path:
             if os.path.exists(file_path):
                 print(f"文件 {file_path} 已存在，跳过下载")
-                downloaded = True
             else:
                 filename = file_path.split(pathSuffix)[-1][1:]
                 pathData = pathlib.Path(file_path)
+                saveFolder = f"{hfDownloadFolder}{pathSuffix}"
+                current_size = get_directory_size(saveFolder)
+                size_limit = 10737418240
+                if current_size > size_limit:
+                    clean_directory(saveFolder, size_limit)
                 DownLoad(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{filename}", pathData.parent, pathData.name)
                 print(f'模型文件下载完成 {file_path}')
-                downloaded = True
+                downloadedFilePath = True
             break
-    return downloaded
+    return downloadedFilePath
     
 
 def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
     fileList = []
+    matchedPathSuffix = ''
     for pathSuffix in hfModelRepoMap:
         if model_path.endswith(pathSuffix):
+            matchedPathSuffix = pathSuffix
             fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
             break
     result = []
+    folder = f"{hfDownloadFolder}{matchedPathSuffix}"
+    os.makedirs(folder, exist_ok=True)
     for file in fileList:
-        full_path = model_path + '/' + file
+        full_path = f"{folder}/{file}"
         if ext_filter is not None:
             _, ext = os.path.splitext(file)
             if ext.lower() not in ext_filter:
@@ -66,5 +75,42 @@ def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
             # 直接返回http连接还是需要手动下载，sd不会自动下载
             # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
     
-    print(f'加载模型列表 {model_path}')
     return result
+
+
+
+def get_directory_size(directory):
+    """计算目录的总大小（字节）"""
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            total_size += os.path.getsize(filepath)
+    return total_size
+
+def get_files_by_creation_time(directory):
+    """获取按创建时间排序的文件列表"""
+    files = []
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            creation_time = os.path.getctime(filepath)
+            files.append((filepath, creation_time))
+    # 按创建时间排序（旧的在前）
+    files.sort(key=lambda x: x[1])
+    return files
+
+def clean_directory(directory, size_limit):
+    """清理目录，直到目录大小小于指定阈值"""
+    while get_directory_size(directory) > size_limit:
+        files = get_files_by_creation_time(directory)
+        if not files:
+            print("目录已空，无法继续删除文件。")
+            break
+        # 删除最早的文件
+        oldest_file = files[0][0]
+        try:
+            os.remove(oldest_file)
+            print(f"删除文件：{oldest_file}")
+        except Exception as e:
+            print(f"无法删除文件 {oldest_file}：{e}")
