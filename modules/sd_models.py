@@ -311,7 +311,7 @@ def read_metadata_from_safetensors(filename):
 
 
 def read_state_dict(checkpoint_file, print_global_state=False, map_location=None):
-    loadHuggingfaceModel(checkpoint_file)
+    # loadHuggingfaceModel(checkpoint_file)
     _, extension = os.path.splitext(checkpoint_file)
     if extension.lower() == ".safetensors":
         device = map_location or shared.weight_load_location or devices.get_optimal_device_name()

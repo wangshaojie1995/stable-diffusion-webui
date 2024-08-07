@@ -28,7 +28,6 @@ def DownLoad(URI:str,DownloadPath:pathlib.Path,DownLoadFileName:str ) -> int:
         raise Exception(str.format("download \'{0}\' failed",URI))
 
 
-# TODO: api运行完成后删除下载的模型
 def loadHuggingfaceModel(file_path):
     downloadedFilePath = file_path
     print(f'加载模型文件 {file_path}')
