@@ -101,9 +101,10 @@ def cached_data_for_file(subsection, title, filename, func):
     If the data generation fails, None is returned to indicate the failure. Otherwise, the generated
     or cached data is returned as a dictionary.
     """
+    noHash = shared.cmd_opts.no_hashing and subsection in ['safetensors-metadata']
     # downloaded = loadHuggingfaceModel(filename)
     existing_cache = cache(subsection)
-    if shared.cmd_opts.no_hashing:
+    if noHash:
         ondisk_mtime = -1
     else:
         ondisk_mtime = os.path.getmtime(filename)
@@ -114,7 +115,7 @@ def cached_data_for_file(subsection, title, filename, func):
             entry = None
 
     if not entry or 'value' not in entry:
-        if shared.cmd_opts.no_hashing:
+        if noHash:
             value = {}
         else:
             value = func()
