@@ -62,10 +62,9 @@ def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
         if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
             continue
         if full_path not in output:
-            # TODO: 是否可以直接返回下载地址
-            # result.append(full_path)
-            result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
+            result.append(full_path)
+            # 直接返回http连接还是需要手动下载，sd不会自动下载
+            # result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
     
     print(f'加载模型列表 {model_path}')
-    print(result)
     return result
