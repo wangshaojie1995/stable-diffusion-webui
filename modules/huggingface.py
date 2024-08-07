@@ -46,7 +46,7 @@ def loadHuggingfaceModel(file_path):
     return downloaded
     
 
-def huggingfaceModelList(model_path, output, ext_blacklist):
+def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
     print(model_path, output, ext_blacklist)
     fileList = []
     for pathSuffix in hfModelRepoMap:
@@ -56,9 +56,14 @@ def huggingfaceModelList(model_path, output, ext_blacklist):
     result = []
     for file in fileList:
         full_path = model_path + '/' + file
+        if ext_filter is not None:
+            _, ext = os.path.splitext(file)
+            if ext.lower() not in ext_filter:
+                continue
         if ext_blacklist is not None and any(full_path.endswith(x) for x in ext_blacklist):
             continue
         if full_path not in output:
+            # TODO: 是否可以直接返回下载地址
             result.append(full_path)
     
     print(f'加载模型列表 {model_path}')
