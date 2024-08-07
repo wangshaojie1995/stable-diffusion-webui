@@ -62,6 +62,7 @@ def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
             matchedPathSuffix = pathSuffix
             cacheData = existing_cache.get(pathSuffix)
             if cacheData:
+                print('缓存读取 modelList')
                 result = cacheData
             else:
                 fileList = list_repo_files(hfModelRepoMap[pathSuffix], repo_type="model")
