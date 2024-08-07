@@ -67,4 +67,5 @@ def huggingfaceModelList(model_path, output,ext_filter, ext_blacklist):
             result.append(f"https://huggingface.co/{hfModelRepoMap[pathSuffix]}/resolve/main/{file}?download=true")
     
     print(f'加载模型列表 {model_path}')
+    print(result)
     return result
