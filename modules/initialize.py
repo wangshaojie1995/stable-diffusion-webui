@@ -153,7 +153,9 @@ def initialize_rest(*, reload_script_modules=False):
 
         devices.first_time_calculation()
     if not shared.cmd_opts.skip_load_model_at_start:
-        Thread(target=load_model).start()
+        thread = Thread(target=load_model)
+        thread.start()
+        thread.join()
 
     from modules import shared_items
     shared_items.reload_hypernetworks()
